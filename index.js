@@ -15,6 +15,7 @@ mongoose.connect(MONGODB_URL + DB_NAME).then(() => {
 });
 
 const app = express();
+
 env.config();
 app.use(cors());
 app.use(express.json());
@@ -34,7 +35,7 @@ const io = new Server(server, {
 io.on("connection", async (socket) => {
   socket.join(["ROOM"]);
   socket.emit("CONNECTED", socket.id);
-
+  
   console.log("user Connected " + socket.id);
 
   socket.addListener("Disconnection", () => {
