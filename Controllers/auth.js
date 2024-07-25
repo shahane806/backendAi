@@ -4,7 +4,7 @@ const bcryptjs = require("bcryptjs");
 const env = require("dotenv");
 env.config();
 const login = async (req, res) => {
-  const { email, password } = req?.headers;
+  const { email, password } = req?.body;
   console.log(email,password)
   try {
     let authToken = null;
@@ -26,6 +26,7 @@ const login = async (req, res) => {
       if (passwordCompare === true) {
         authToken = jwt.sign(
           {
+            _id : user?._id,
             username: email,
             password: hashedPassword,
           },
@@ -39,6 +40,7 @@ const login = async (req, res) => {
       if (passwordCompare === true && user != null) {
         res?.status(200).send({
           user:{
+            _id : user?._id,
             username : user?.username,
             email : user?.email,
           },
@@ -51,7 +53,7 @@ const login = async (req, res) => {
   }
 };
 const signup = async (req, res) => {
-  const { username, email, password } = req?.headers;
+  const { username, email, password } = req?.body;
   console.log(username,email,password)
 
   if (
@@ -100,6 +102,7 @@ const signup = async (req, res) => {
         }).save();
         res?.status(200).send({
           user:{
+            _id : user?._id,
             username : user?.username,
             email : user?.email,
           },
