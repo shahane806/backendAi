@@ -30,8 +30,13 @@ const login = async (req, res) => {
             username: email,
             password: hashedPassword,
           },
-          process.env.SECRET_KEY
+          process.env.SECRET_KEY,
+          {
+            expiresIn:process.env.EXPIRES_IN_AUTH_TOKEN
+          }
+          
         );
+        
       }
       if (passwordCompare === false) {
         res?.status(401).send("Incorrect Password");
@@ -76,14 +81,7 @@ const signup = async (req, res) => {
     let hp = await hashedPasswordPromise.then((result) => {
       return result;
     });
-    let authToken = jwt.sign(
-      {
-        username: username,
-        email: email,
-        password: hp,
-      },
-      process.env.SECRET_KEY
-    );
+   
     try {
       let user = await signupModel.findOne({
         username: username,
@@ -100,6 +98,18 @@ const signup = async (req, res) => {
           email: email,
           password: hp,
         }).save();
+        let authToken = jwt.sign(
+          {
+            _id : user?._id,
+            username: username,
+            email: email,
+            password: hp,
+          },
+          process.env.SECRET_KEY,
+          {
+            expiresIn:process.env.EXPIRES_IN_AUTH_TOKEN
+          }
+        );
         res?.status(200).send({
           user:{
             _id : user?._id,
