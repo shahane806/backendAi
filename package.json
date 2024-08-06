@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "PoweredAi": "nodemon ./AI/index.js"
   },
   "author": "Om Shahane",
   "license": "ISC",
@@ -22,6 +23,7 @@
     "natural": "^7.1.0",
     "nodemon": "^3.1.4",
     "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "url": "^0.11.3"
   }
 }

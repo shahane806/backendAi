@@ -30,7 +30,11 @@ app.use(
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:8000"],
+    origin: [
+      process.env.CLIENT_BASE_URL,
+      process.env.SERVER_BASE_URL,
+      process.env.AI_BASE_URL,
+    ],
     credentials: true,
   },
 });
@@ -65,12 +69,10 @@ io.on("connection", async (socket) => {
     }).save();
   });
 });
-app.get("/", (req, res) => {
-  res?.sendFile(__dirname + "/Public/index.html");
-});
+
 app.listen(8001, () => {
   console.log("App is listning on port " + 8001);
 });
 server.listen(PORT, () => {
-  console.log("AI is listning on port " + PORT);
+  console.log("SOCKET_SERVER is listning on port " + PORT);
 });
