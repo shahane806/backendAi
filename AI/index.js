@@ -23,15 +23,35 @@ socket.on("connect", (socket) => {
   socket.on("disconnect", () => {
     console.log("ai disconnected");
   });
-  socket.on("MESSAGE_RESPONSE", ({ _id, chat }) => {
-    console.log(_id, chat);
-    socket.emit("MESSAGE_RESPONSE", {
-      userId: {
-        _id: _id,
-      },
-      chat: chat,
-      res: "hello from ai",
-    });
+  socket.on("MESSAGE_RESPONSE", async ({ _id, chat }) => {
+    try {
+      const response = await fetch(`${process.env.DJANGO_SERVER_API}?query=${encodeURIComponent(chat)}`, {
+        method: 'GET',
+      });
+      
+      const data = await response.json();
+  
+      // Emit the response back to the socket with the received data
+      socket.emit("MESSAGE_RESPONSE", {
+        userId: {
+          _id: _id,
+        },
+        chat: chat,
+        res: data.prediction,  // Assuming 'prediction' is the key in the Django JSON response
+      });
+  
+    } catch (error) {
+      console.error("Error fetching from Django server:", error);
+  
+      // Emit an error response if the fetch fails
+      socket.emit("MESSAGE_RESPONSE", {
+        userId: {
+          _id: _id,
+        },
+        chat: chat,
+        res: "Error occurred while fetching the response",  // or any other error message
+      });
+    }
   });
   server.listen(AI_PORT, () => {
     console.log('AI IS RUNNING ON PORT 8003');
