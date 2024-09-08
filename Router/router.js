@@ -1,7 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const Router = express.Router();
-const { login, signup } = require("../Controllers/auth");
+const { login, signup, forgetPassword, adminLogin } = require("../Controllers/auth");
 const {uploadSingleFileController,uploadMultipleFilesController} = require("../Controllers/uploadFileController");
 const multer = require("multer");
 const AuthCheck = require("../Middlewere/AuthCheck");
@@ -22,6 +22,8 @@ const upload = multer({ storage });
 Router.post("/upload",AuthCheck, upload.single("file"), uploadSingleFileController);
 Router.post("/upload/multiFiles",AuthCheck, upload.array("multiFiles",10),uploadMultipleFilesController);
 Router.post("/auth/login", login);
+Router.post("/Admin/Auth",adminLogin)
 Router.post("/auth/signup", signup);
-Router.get("/uploads/:uid/:filename",getFileController)
+Router.post("/auth/forgetPassword",forgetPassword);
+Router.get("/uploads/:uid/:filename",getFileController);
 module.exports = Router;
