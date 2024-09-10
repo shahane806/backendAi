@@ -26,4 +26,5 @@ Router.post("/Admin/Auth",adminLogin)
 Router.post("/auth/signup", signup);
 Router.post("/auth/forgetPassword",forgetPassword);
 Router.get("/uploads/:uid/:filename",getFileController);
+
 module.exports = Router;
