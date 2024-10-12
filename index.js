@@ -38,18 +38,25 @@ const io = new Server(server, {
     credentials: true,
   },
 });
-
+let counter = 0;
 io.use(SocketAuthCheck);
 io.on("connection", async (socket) => {
   socket.join(["ROOM"]);
   socket.emit("CONNECTED", socket.id);
-
+  counter += 1;
   console.log("user Connected " + socket.id);
-
+  console.log("Total Users Connected : ", counter);
+  socket.emit("getOnlineUsersCount", counter);
+  
   socket.addListener("Disconnection", () => {
     socket.disconnect(true);
     console.log("user Disconnected " + socket.id);
+    counter -= 1;
+    console.log("Total Users Connected : ", counter);
+    socket.emit("getOnlineUsersCount", counter);
+
   });
+ 
   socket.addListener("NEW_MESSAGE", ({ userId, chat }) => {
     const _id = userId?._id;
     console.log(userId);

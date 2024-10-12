@@ -15,7 +15,7 @@ firebase_admin.initializeApp({
 const AuthCheck = async (req,res,next)=>{
    let _id = req?.headers?._id;
    let authToken = req?.headers?.authorization;
-   console.log(req?.headers)
+//    console.log(req?.headers)
    if(authToken == null || authToken == undefined || _id == null || _id == undefined){
     return res?.status(500).send("Access Denied")
    }
@@ -26,7 +26,7 @@ const AuthCheck = async (req,res,next)=>{
     if(isObjectIdOrHexString(_id)){
         //mongodb auth
         let decodeToken = jwt.decode(authToken);
-        console.log("DecodeToken",decodeToken)
+        // console.log("DecodeToken",decodeToken)
         if(decodeToken?._id == _id){
             next();
         }else{
