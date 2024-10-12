@@ -6,6 +6,7 @@ const {uploadSingleFileController,uploadMultipleFilesController} = require("../C
 const multer = require("multer");
 const AuthCheck = require("../Middlewere/AuthCheck");
 const getFileController = require("../Controllers/getFileController");
+const {getUserSignupCount,getAdminSignupCount} = require("../Controllers/getSignupCount")
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     fs.mkdir("./uploads/" + req?.headers?._id, { recursive: true }, () => {
@@ -26,5 +27,6 @@ Router.post("/Admin/Auth",adminLogin)
 Router.post("/auth/signup", signup);
 Router.post("/auth/forgetPassword",forgetPassword);
 Router.get("/uploads/:uid/:filename",getFileController);
-
+Router.get("/getUserSignupCount",AuthCheck,getUserSignupCount);
+Router.get("/getAdminSignupCount",AuthCheck,getAdminSignupCount);
 module.exports = Router;
