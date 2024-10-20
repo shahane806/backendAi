@@ -11,9 +11,6 @@ const MONGODB_URL = process.env.MONGODB_URL;
 const DB_NAME = process.env.DB_NAME;
 const fileUpload = require("express-fileupload");
 const SocketAuthCheck = require("./Middlewere/SocketAuthCheck");
-mongoose.connect(MONGODB_URL + DB_NAME).then(() => {
-  console.log("MongoDb is Connected to Database : " + DB_NAME);
-});
 
 const app = express();
 
@@ -38,25 +35,58 @@ const io = new Server(server, {
     credentials: true,
   },
 });
-let counter = 0;
+mongoose.connect(MONGODB_URL + DB_NAME).then(() => {
+  console.log("MONGO");
+});
+// To store the list of connected users
+let onlineUsers = {};
+let username = "";
+
 io.use(SocketAuthCheck);
 io.on("connection", async (socket) => {
-  socket.join(["ROOM"]);
   socket.emit("CONNECTED", socket.id);
-  counter += 1;
+  let e = await io
+    .in("ROOM")
+    .fetchSockets()
+    .then((e) => {
+      return e;
+    });
+  io.emit("onlineUsersCount", e.length);
   console.log("user Connected " + socket.id);
-  console.log("Total Users Connected : ", counter);
-  socket.emit("getOnlineUsersCount", counter);
-  
-  socket.addListener("Disconnection", () => {
-    socket.disconnect(true);
-    console.log("user Disconnected " + socket.id);
-    counter -= 1;
-    console.log("Total Users Connected : ", counter);
-    socket.emit("getOnlineUsersCount", counter);
-
+  // When a new user connects, you can add their information
+  // For example, you might receive their username upon connection
+  socket.on("userOnline", async (un) => {
+    onlineUsers[un] = socket.id;
+    console.log(onlineUsers);
+    socket.join(["ROOM"]);
+    let e = await io
+      .in("ROOM")
+      .fetchSockets()
+      .then((e) => {
+        return e;
+      });
+    io.emit("onlineUsers", onlineUsers); // Send updated user list to all clients
+    io.emit("onlineUsersCount", e.length);
+    username = un;
   });
- 
+  io.on("onlineUsers", (e) => {
+    console.log(e);
+  });
+  socket.addListener("Disconnection", async () => {
+    socket.disconnect(true);
+    delete onlineUsers[username];
+    io.emit("onlineUsers", onlineUsers); // Send updated user list to all clients
+    let e = await io
+      .in("ROOM")
+      .fetchSockets()
+      .then((e) => {
+        return e;
+      });
+    io.emit("onlineUsersCount", e.length);
+    console.log(onlineUsers);
+    console.log("user Disconnected " + socket.id);
+  });
+
   socket.addListener("NEW_MESSAGE", ({ userId, chat }) => {
     const _id = userId?._id;
     console.log(userId);

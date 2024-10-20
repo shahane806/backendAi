@@ -17,9 +17,10 @@ const socket = socketIoClient(process.env.SERVER_BASE_URL,{
 const AI_PORT = process.env.AI_PORT || 8003
 socket.on("connect", (socket) => {
     console.log("ai connected");
-
     
   });
+  socket.emit("userOnline","AI")
+
   socket.on("disconnect", () => {
     console.log("ai disconnected");
   });
