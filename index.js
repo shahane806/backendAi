@@ -88,8 +88,9 @@ io.on("connection", async (socket) => {
   });
 
   socket.addListener("NEW_MESSAGE", ({ userId, chat }) => {
+    
     const _id = userId?._id;
-    console.log(userId);
+    console.log(userId,chat);
     socket.to("ROOM").emit("MESSAGE_RESPONSE", { _id, chat });
   });
   socket.addListener("MESSAGE_RESPONSE", ({ userId, chat, res }) => {

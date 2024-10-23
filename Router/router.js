@@ -6,7 +6,8 @@ const {uploadSingleFileController,uploadMultipleFilesController} = require("../C
 const multer = require("multer");
 const AuthCheck = require("../Middlewere/AuthCheck");
 const getFileController = require("../Controllers/getFileController");
-const {getUserSignupCount,getAdminSignupCount} = require("../Controllers/getSignupCount")
+const {getUserSignupCount,getAdminSignupCount} = require("../Controllers/getSignupCount");
+const { chatbotCRUD_Controller } = require("../Controllers/chatbotCRUD_Controller");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     fs.mkdir("./uploads/" + req?.headers?._id, { recursive: true }, () => {
@@ -29,4 +30,10 @@ Router.post("/auth/forgetPassword",forgetPassword);
 Router.get("/uploads/:uid/:filename",getFileController);
 Router.get("/getUserSignupCount",AuthCheck,getUserSignupCount);
 Router.get("/getAdminSignupCount",AuthCheck,getAdminSignupCount);
+Router.get("/Admin/Dashboard/Chatbot/viewAllChatbots",AuthCheck,chatbotCRUD_Controller);
+Router.post("/Admin/Dashboard/Chatbot/addNewChatbot",AuthCheck,chatbotCRUD_Controller);
+Router.patch("/Admin/Dashboard/Chatbot/updateChatbot/:id",AuthCheck,chatbotCRUD_Controller);
+Router.delete("/Admin/Dashboard/Chatbot/deleteChatbot/:id",AuthCheck,chatbotCRUD_Controller);
+
+
 module.exports = Router;
