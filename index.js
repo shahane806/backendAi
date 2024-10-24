@@ -87,11 +87,12 @@ io.on("connection", async (socket) => {
     console.log("user Disconnected " + socket.id);
   });
 
-  socket.addListener("NEW_MESSAGE", ({ userId, chat }) => {
-    
-    const _id = userId?._id;
-    console.log(userId,chat);
-    socket.to("ROOM").emit("MESSAGE_RESPONSE", { _id, chat });
+  socket.addListener("NEW_MESSAGE", (props) => {
+    const _id = props?.userId?._id;
+    const chat = props?.chat;
+    const chatBotName = props?.chatBotName;
+    console.log(props?.userId, props?.chat,props?.chatBotName);
+    socket.to("ROOM").emit("AI_MESSAGE_RESPONSE", { _id, chat,chatBotName});
   });
   socket.addListener("MESSAGE_RESPONSE", ({ userId, chat, res }) => {
     // console.log(res)
