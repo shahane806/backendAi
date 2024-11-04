@@ -1,13 +1,26 @@
 const express = require("express");
 const fs = require("fs");
 const Router = express.Router();
-const { login, signup, forgetPassword, adminLogin } = require("../Controllers/auth");
-const {uploadSingleFileController,uploadMultipleFilesController} = require("../Controllers/uploadFileController");
+const {
+  login,
+  signup,
+  forgetPassword,
+  adminLogin,
+} = require("../Controllers/auth");
+const {
+  uploadSingleFileController,
+  uploadMultipleFilesController,
+} = require("../Controllers/uploadFileController");
 const multer = require("multer");
 const AuthCheck = require("../Middlewere/AuthCheck");
 const getFileController = require("../Controllers/getFileController");
-const {getUserSignupCount,getAdminSignupCount} = require("../Controllers/getSignupCount");
-const { chatbotCRUD_Controller } = require("../Controllers/chatbotCRUD_Controller");
+const {
+  getUserSignupCount,
+  getAdminSignupCount,
+} = require("../Controllers/getSignupCount");
+const {
+  chatbotCRUD_Controller,
+} = require("../Controllers/chatbotCRUD_Controller");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     fs.mkdir("./uploads/" + req?.headers?._id, { recursive: true }, () => {
@@ -15,25 +28,50 @@ const storage = multer.diskStorage({
     });
   },
   filename: function (req, file, cb) {
-    console.log(file.originalname)
+    console.log(file.originalname);
     return cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 
 const upload = multer({ storage });
-Router.post("/upload",AuthCheck, upload.single("file"), uploadSingleFileController);
-Router.post("/upload/multiFiles",AuthCheck, upload.array("multiFiles",10),uploadMultipleFilesController);
+Router.post(
+  "/upload",
+  AuthCheck,
+  upload.single("file"),
+  uploadSingleFileController
+);
+Router.post(
+  "/upload/multiFiles",
+  AuthCheck,
+  upload.array("multiFiles", 10),
+  uploadMultipleFilesController
+);
 Router.post("/auth/login", login);
-Router.post("/Admin/Auth",adminLogin)
+Router.post("/Admin/Auth", adminLogin);
 Router.post("/auth/signup", signup);
-Router.post("/auth/forgetPassword",forgetPassword);
-Router.get("/uploads/:uid/:filename",getFileController);
-Router.get("/getUserSignupCount",AuthCheck,getUserSignupCount);
-Router.get("/getAdminSignupCount",AuthCheck,getAdminSignupCount);
-Router.get("/Admin/Dashboard/Chatbot/viewAllChatbots",AuthCheck,chatbotCRUD_Controller);
-Router.post("/Admin/Dashboard/Chatbot/addNewChatbot",AuthCheck,chatbotCRUD_Controller);
-Router.patch("/Admin/Dashboard/Chatbot/updateChatbot/:id",AuthCheck,chatbotCRUD_Controller);
-Router.delete("/Admin/Dashboard/Chatbot/deleteChatbot/:id",AuthCheck,chatbotCRUD_Controller);
-
+Router.post("/auth/forgetPassword", forgetPassword);
+Router.get("/uploads/:uid/:filename", getFileController);
+Router.get("/getUserSignupCount", AuthCheck, getUserSignupCount);
+Router.get("/getAdminSignupCount", AuthCheck, getAdminSignupCount);
+Router.get(
+  "/Admin/Dashboard/Chatbot/viewAllChatbots",
+  AuthCheck,
+  chatbotCRUD_Controller
+);
+Router.post(
+  "/Admin/Dashboard/Chatbot/addNewChatbot",
+  AuthCheck,
+  chatbotCRUD_Controller
+);
+Router.patch(
+  "/Admin/Dashboard/Chatbot/updateChatbot/:id",
+  AuthCheck,
+  chatbotCRUD_Controller
+);
+Router.delete(
+  "/Admin/Dashboard/Chatbot/deleteChatbot/:id",
+  AuthCheck,
+  chatbotCRUD_Controller
+);
 
 module.exports = Router;
