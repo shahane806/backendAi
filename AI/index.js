@@ -33,15 +33,35 @@ socket.on("AI_MESSAGE_RESPONSE", async (props) => {
         method: "GET",
       }
     );
-    const data = await response.json();
+    
+    if (await response.headers.get("content-type").includes("application/json")) {
+      // console.log('JSON response:', await response.json());
+      socket.emit("MESSAGE_RESPONSE", {
+        userId: {
+          _id: props?._id,
+        },
+        chat: props?.chat,
+        res: await response.json(), // Assuming 'prediction' is the key in the Django JSON response
+      });
+    } else if (await response.headers.get("content-type").includes("text/html")) {
+      // console.log('HTML response:', await response.text() );
+      socket.emit("MESSAGE_RESPONSE", {
+        userId: {
+          _id: props?._id,
+        },
+        chat: props?.chat,
+        res: await response.text(), // Assuming 'prediction' is the key in the Django JSON response
+      });
+    }
+        // const data = await response.json();
     // Emit the response back to the socket with the received data
-    socket.emit("MESSAGE_RESPONSE", {
-      userId: {
-        _id: props?._id,
-      },
-      chat: props?.chat,
-      res: data.prediction, // Assuming 'prediction' is the key in the Django JSON response
-    });
+    // socket.emit("MESSAGE_RESPONSE", {
+    //   userId: {
+    //     _id: props?._id,
+    //   },
+    //   chat: props?.chat,
+    //   res: data.prediction, // Assuming 'prediction' is the key in the Django JSON response
+    // });
   } catch (error) {
     console.error("Error fetching from Django server:", error);
 

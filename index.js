@@ -94,17 +94,21 @@ io.on("connection", async (socket) => {
     console.log(props?.userId, props?.chat,props?.chatBotName);
     socket.to("ROOM").emit("AI_MESSAGE_RESPONSE", { _id, chat,chatBotName});
   });
-  socket.addListener("MESSAGE_RESPONSE", ({ userId, chat, res }) => {
-    // console.log(res)
 
-    socket.to("ROOM").emit("MESSAGE_RESPONSE_CLIENT", { res, userId });
+  socket.addListener("MESSAGE_RESPONSE", ({ userId, chat, res  }) => {
+    if(res?.prediction != null){
+      res = res?.prediction;
+    }
+
+    res && socket.to("ROOM").emit("MESSAGE_RESPONSE_CLIENT", { res , userId });
+    res?.prediction && socket.to("ROOM").emit("MESSAGE_RESPONSE_CLIENT", { res , userId });
     // console.log(userId,chat,res)
     new chatModel({
       userId: {
         _id: userId?._id,
       },
       chat: chat,
-      response: res,
+      response: res?.prediction,
     }).save();
   });
 });
