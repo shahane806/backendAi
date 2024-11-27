@@ -28,8 +28,9 @@ const storage = multer.diskStorage({
     });
   },
   filename: function (req, file, cb) {
-    console.log(file.originalname);
-    return cb(null, `${Date.now()}-${file.originalname}`);
+    console.log(req?.headers);
+    const lastmodified = req?.headers?.lastmodified;
+    return cb(null, `${lastmodified}-${file.originalname}`);
   },
 });
 
